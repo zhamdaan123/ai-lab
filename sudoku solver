@@ -1,0 +1,90 @@
+#include<iostream>
+#include<vector>
+
+using namespace std; 
+
+void printGrid (const vector<vector<int>>&grid){ 
+    for (const auto &row : grid) { 
+        for (int num :row ) { 
+            cout<< num << " "; 
+        }
+        cout<<endl;
+    }
+}
+
+void inputGrid (vector<vector<int>>&grid) {
+    cout<<"enter the sudoku grid (9x9) , enter 0 for empty cells \n "; 
+    for(int i = 0 ;i<9; ++i ){
+        vector<int>row ; 
+        for (int j =0  ; j<9 ; ++j) { 
+            int num ; 
+            cin>>num ; 
+            row.push_back(num);
+        }
+        grid.push_back(row);
+    }
+}
+bool isSafe(int row, int col, const vector<vector<int>>& grid, int val) {
+    for (int i = 0; i < 9; i++) {
+        // Row choice
+        if (grid[row][i] == val) {
+            return false;
+        }
+        // Column choice
+        if (grid[i][col] == val) {
+            return false;
+        }
+        // 3x3 matrix check
+        if (grid[3 * (row / 3) + i / 3][3 * (col / 3) + i % 3] == val) {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+bool solve(vector<vector<int>>& grid) {
+    for (int i = 0; i < 9; i++) {
+        for (int j = 0; j < 9; j++) {
+            if (grid[i][j] == 0) {
+                for (int val = 1; val <= 9; val++) {
+                    if (isSafe(i, j, grid, val)) {
+                        grid[i][j] = val;
+                        if (solve(grid)) {
+                            return true;
+                        }
+                        // Backtrack
+                        grid[i][j] = 0;
+                    }
+                }
+                // If no value fits, the Sudoku is unsolvable
+                return false;
+            }
+        }
+    }
+    // If all cells are filled, Sudoku is solved
+    return true;
+}
+
+
+   
+   int main ()  { 
+       vector<vector<int> > sudokuGrid ; 
+       
+       inputGrid (sudokuGrid); 
+       
+       cout<<" entered Sudoku Grid \n"; 
+       
+       printGrid (sudokuGrid);
+       
+       //solving the sudoku 
+      bool status =  solve(sudokuGrid); 
+      cout<<"answer is "<<endl ; 
+       //printing solution of grid if solution exists
+        printGrid (sudokuGrid);
+     
+       
+       
+       return 0 ; 
+       
+}
